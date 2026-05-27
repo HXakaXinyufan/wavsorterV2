@@ -8,45 +8,24 @@
     <title>
       WAVs Bias Sorter - Find Your Ultimate WAVs Ranking | Bias Ranking Game
     </title>
-    <meta
-      name="title"
-      content="WAVs Bias Sorter - Find Your Ultimate WAVs Ranking | Bias Ranking Game"
-    />
-    <meta
-      name="description"
-      content="Discover your ultimate WAVs bias ranking! Compare and rank your favorite WAVs using our interactive bias ranking system."
-    />
-    <meta
-      name="keywords"
-      content="WAVs, bias sorter, member ranking, bias quiz, ranking game"
-    />
+    <meta name="title" content="WAVs Bias Sorter - Find Your Ultimate WAVs Ranking | Bias Ranking Game" />
+    <meta name="description" content="Discover your ultimate WAVs bias ranking! Compare and rank your favorite WAVs using our interactive bias ranking system." />
+    <meta name="keywords" content="WAVs, bias sorter, member ranking, bias quiz, ranking game" />
     <meta name="author" content="@wav_HX" />
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://hxakaxinyufan.github.io/wavsorterV2/" />
 
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://hxakaxinyufan.github.io/wavsorterV2/" />
-    <meta
-      property="og:title"
-      content="WAVs Bias Sorter - Find Your Ultimate WAVs Ranking"
-    />
-    <meta
-      property="og:description"
-      content="Discover your ultimate WAVs bias ranking! Compare and rank your favorite WAVs using our interactive bias ranking system."
-    />
+    <meta property="og:title" content="WAVs Bias Sorter - Find Your Ultimate WAVs Ranking" />
+    <meta property="og:description" content="Discover your ultimate WAVs bias ranking! Compare and rank your favorite WAVs using our interactive bias ranking system." />
     <meta property="og:site_name" content="WAVs Bias Sorter" />
     <meta property="og:locale" content="en_US" />
 
     <meta property="twitter:card" content="summary_large_image" />
     <meta property="twitter:url" content="https://hxakaxinyufan.github.io/wavsorterV2/" />
-    <meta
-      property="twitter:title"
-      content="WAVs Bias Sorter - Find Your Ultimate WAVs Ranking"
-    />
-    <meta
-      property="twitter:description"
-      content="Discover your ultimate WAVs bias ranking! Compare and rank your favorite WAVs using our interactive bias ranking system."
-    />
+    <meta property="twitter:title" content="WAVs Bias Sorter - Find Your Ultimate WAVs Ranking" />
+    <meta property="twitter:description" content="Discover your ultimate WAVs bias ranking! Compare and rank your favorite WAVs using our interactive bias ranking system." />
     <meta property="twitter:creator" content="@wav_HX" />
 
     <meta name="theme-color" content="#f87fff" />
@@ -60,35 +39,30 @@
   </head>
 
   <body class="song-sorter">
-    <div class="theme-toggle">
-      <button id="music-toggle" class="theme-toggle-text" style="background: none; border: none; cursor: pointer; margin-right: 15px; font-family: inherit; font-weight: bold; color: inherit;">
-        🎵 Play
+    <div class="theme-toggle" style="display: flex; gap: 15px;">
+      
+      <button id="music-toggle" style="background: none; border: none; cursor: pointer; font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 14px; color: inherit; padding: 0;">
+        Play Music
       </button>
-      <span class="theme-toggle-text">#DarkMode</span>
-      <div class="theme-toggle-icon">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="16"
-          height="16"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
-          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-        </svg>
+      
+      <div id="dark-mode-btn" style="display: flex; align-items: center; cursor: pointer;">
+        <span id="dark-mode-text" class="theme-toggle-text">#DarkMode</span>
+        <div class="theme-toggle-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </div>
       </div>
+      
     </div>
+    
     <header class="page-header container">
       <h1>WAVs bias sorter</h1>
       <div>
-        <p>
-          Choose your favorite WAV in each battle to get an accurate ranking.
-        </p>
+        <p>Choose your favorite WAV in each battle to get an accurate ranking.</p>
       </div>
     </header>
+    
     <main class="page-sorter" id="page-sorter">
       <div class="container">
         <h2 id="battleNumber" class="sorter-header">
@@ -97,21 +71,13 @@
 
         <div class="sorter-game">
           <div class="main-battle">
-            <div
-              id="optionA"
-              class="sorter-option"
-              style="--member-color: #f87fff"
-            >
+            <div id="optionA" class="sorter-option" style="--member-color: #f87fff">
               <div class="photocard-info no-image">
                 <div class="member-name">Loading...</div>
               </div>
             </div>
             <div class="versus"><span>vs</span></div>
-            <div
-              id="optionB"
-              class="sorter-option"
-              style="--member-color: #f87fff"
-            >
+            <div id="optionB" class="sorter-option" style="--member-color: #f87fff">
               <div class="photocard-info no-image">
                 <div class="member-name">Loading...</div>
               </div>
@@ -126,12 +92,7 @@
         <div id="battleResult"></div>
         <a id="showMore" style="display: none; cursor: pointer">Show More</a>
         <br />
-        <a
-          id="tweet-button"
-          class="result-btn result-btn-primary"
-          style="display: none"
-          href=""
-        >
+        <a id="tweet-button" class="result-btn result-btn-primary" style="display: none" href="">
           Share to X
         </a>
       </div>
@@ -143,15 +104,7 @@
       </a>
     </footer>
 
-    <link
-      href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap"
-      rel="preload"
-      as="style"
-      onload="
-        this.onload = null;
-        this.rel = 'stylesheet';
-      "
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="preload" as="style" onload="this.onload = null; this.rel = 'stylesheet';" />
     
     <audio id="bg-music"></audio>
   </body>
