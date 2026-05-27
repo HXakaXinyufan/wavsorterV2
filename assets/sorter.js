@@ -1,4 +1,3 @@
-
 import TripleSBiasSorter from "./sorter-class.js";
 import { memberData } from "./member-data.js";
 
@@ -41,6 +40,7 @@ function toNameFace(mem) {
 }
 
 let els = {};
+let hasMusicStarted = false; // Global flag for music
 
 function cacheElements() {
   els.optionA = document.getElementById("optionA");
@@ -79,24 +79,24 @@ document.addEventListener("DOMContentLoaded", function () {
     els.showMore.addEventListener("click", toggleResult);
   }
 
-  // --- Invisible Autoplay Music Logic ---
-  // Notice the paths no longer have a slash at the start
+  // --- Bulletproof Music Logic ---
+  // Notice the %20 replacing the spaces in the filenames
   const playlist = [
     "assets/Beam.mp3",
     "assets/Chiyu.mp3",
     "assets/Deju-Vu.mp3",
-    "assets/Firework Diary.mp3",
-    "assets/Friend Zone.mp3",
+    "assets/Firework%20Diary.mp3",
+    "assets/Friend%20Zone.mp3",
     "assets/Generation.mp3",
-    "assets/Inner Dance.mp3",
-    "assets/Love Child.mp3",
-    "assets/Moto Princess.mp3",
+    "assets/Inner%20Dance.mp3",
+    "assets/Love%20Child.mp3",
+    "assets/Moto%20Princess.mp3",
     "assets/Persona.mp3",
-    "assets/Seoul Sonyo Sound.mp3",
-    "assets/Speed Love.mp3",
+    "assets/Seoul%20Sonyo%20Sound.mp3",
+    "assets/Speed%20Love.mp3",
     "assets/Touch.mp3",
     "assets/Vision.mp3",
-    "assets/White Soul Sneakers.mp3"
+    "assets/White%20Soul%20Sneakers.mp3"
   ];
 
   // Shuffle playlist
@@ -111,17 +111,7 @@ document.addEventListener("DOMContentLoaded", function () {
     els.bgMusic.src = playlist[currentSongIndex]; 
   }
 
-  let hasMusicStarted = false;
-
-  // The invisible trigger: starts music the moment they click anywhere on the page
-  document.body.addEventListener("click", () => {
-    if (!hasMusicStarted && els.bgMusic) {
-      hasMusicStarted = true;
-      els.bgMusic.play().catch(e => console.warn("Playback prevented:", e));
-    }
-  }, { once: true });
-
-  // Auto-advance to next song
+  // Auto-advance to next song when one ends
   if (els.bgMusic) {
     els.bgMusic.addEventListener("ended", () => {
       currentSongIndex++;
@@ -135,7 +125,7 @@ document.addEventListener("DOMContentLoaded", function () {
       }
       
       els.bgMusic.src = playlist[currentSongIndex];
-      els.bgMusic.play().catch(e => console.warn("Playback prevented:", e));
+      els.bgMusic.play().catch(e => console.warn("Next track prevented:", e));
     });
   }
 });
@@ -144,6 +134,15 @@ let isAnimating = false;
 
 async function handleSort(preference) {
   if (sorter.isComplete() || isAnimating) return;
+  
+  // --- START MUSIC ON FIRST CARD CLICK ---
+  // Tying the music directly to the vote button bypasses strict browser blocks
+  if (!hasMusicStarted && els.bgMusic) {
+    hasMusicStarted = true;
+    console.log("Starting music track:", els.bgMusic.src);
+    els.bgMusic.play().catch(e => console.warn("Audio blocked by browser:", e));
+  }
+
   isAnimating = true;
   document.body.classList.add("is-animating");
 
