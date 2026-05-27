@@ -22,9 +22,10 @@ function setThemeIcon(isDarkMode) {
 
 function toggleDarkMode() {
   const isDarkMode = document.body.classList.toggle("dark-mode");
-  document.querySelector(".theme-toggle-text").textContent = isDarkMode
-    ? "Light Mode"
-    : "#DarkMode";
+  const dmText = document.getElementById("dark-mode-text");
+  if (dmText) {
+    dmText.textContent = isDarkMode ? "Light Mode" : "#DarkMode";
+  }
   setThemeIcon(isDarkMode);
 
   localStorage.setItem("darkMode", isDarkMode);
@@ -48,10 +49,9 @@ function cacheElements() {
   els.pageSorter = document.getElementById("page-sorter");
   els.showMore = document.getElementById("showMore");
   els.tweetButton = document.getElementById("tweet-button");
-  els.sssongsButton = document.getElementById("sssongs-button");
-  els.themeToggleText = document.querySelector(".theme-toggle-text");
   els.musicToggle = document.getElementById("music-toggle");
   els.bgMusic = document.getElementById("bg-music");
+  els.darkModeBtn = document.getElementById("dark-mode-btn");
 }
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -60,7 +60,8 @@ document.addEventListener("DOMContentLoaded", function () {
   const savedDarkMode = localStorage.getItem("darkMode");
   if (savedDarkMode === "true") {
     document.body.classList.add("dark-mode");
-    els.themeToggleText.textContent = "Light Mode";
+    const dmText = document.getElementById("dark-mode-text");
+    if (dmText) dmText.textContent = "Light Mode";
     setThemeIcon(true);
   }
 
@@ -69,10 +70,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
   els.optionA.addEventListener("click", () => handleSort("A"));
   els.optionB.addEventListener("click", () => handleSort("B"));
-  document
-    .querySelector(".theme-toggle")
-    .addEventListener("click", toggleDarkMode);
-  els.showMore.addEventListener("click", toggleResult);
+  
+  // Safe listener just for dark mode
+  if (els.darkModeBtn) {
+    els.darkModeBtn.addEventListener("click", toggleDarkMode);
+  }
+  
+  if (els.showMore) {
+    els.showMore.addEventListener("click", toggleResult);
+  }
 
   // --- Music Player Logic ---
   const playlist = [
@@ -110,10 +116,10 @@ document.addEventListener("DOMContentLoaded", function () {
     els.musicToggle.addEventListener("click", () => {
       if (isMusicPlaying) {
         els.bgMusic.pause();
-        els.musicToggle.textContent = "🎵 Play";
+        els.musicToggle.textContent = "Play Music";
       } else {
         els.bgMusic.play().catch(e => console.warn("Playback prevented:", e));
-        els.musicToggle.textContent = "🎵 Pause";
+        els.musicToggle.textContent = "Pause Music";
       }
       isMusicPlaying = !isMusicPlaying;
     });
@@ -200,7 +206,6 @@ function showResult({ full = false } = {}) {
   const shareText = `My WAVs Bias Ranking:%0A${listResult.join("%0A")}`;
   els.tweetButton.style.display = "inline-block";
   els.tweetButton.href = `https://twitter.com/intent/tweet?text=${shareText}`;
-  if(els.sssongsButton) els.sssongsButton.style.display = "none";
 }
 
 let showingFullResults = false;
@@ -216,11 +221,14 @@ function updateProgressDisplay(progress) {
   const filledHearts = Math.floor(
     (progress.progressPercent / 100) * heartCount,
   );
-  const heartDisplay =
-    "♥".repeat(filledHearts) + "♡".repeat(heartCount - filledHearts);
-  els.battleNumber.innerHTML = html`<strong
-      >Battle #${progress.currentQuestion}</strong
-    ><br />${heartDisplay} ${progress.progressPercent}% sorted`;
+  
+  // Safe unicode characters to prevent text editor corruption
+  const solidHeart = "\u2665";
+  const emptyHeart = "\u2661";
+  
+  const heartDisplay = solidHeart.repeat(filledHearts) + emptyHeart.repeat(heartCount - filledHearts);
+
+  els.battleNumber.innerHTML = html`<strong>Battle #${progress.currentQuestion}</strong><br />${heartDisplay} ${progress.progressPercent}% sorted`;
 }
 
 function updateOptionContent(optionElement, memberName, memberIndex) {
