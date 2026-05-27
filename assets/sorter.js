@@ -6,7 +6,6 @@ const html = (strings, ...values) =>
 
 const memberNames = Object.keys(memberData);
 let sorter = new TripleSBiasSorter(memberNames, memberData);
-let memberPicId = {};
 
 const FLIP_TRANSITION_MS = 350;
 
@@ -14,26 +13,6 @@ const SUN_SVG =
   '<path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>';
 const MOON_SVG =
   '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
-
-const rand = (min, max) => Math.floor(Math.random() * (max - min + 1) + min);
-
-function initMemberPic() {
-  const isDarkMode = localStorage.getItem("darkMode") === "true";
-  const picSet = isDarkMode ? `picSet${rand(3, 4)}` : `picSet${rand(1, 2)}`;
-  memberPicId = {};
-  for (const memberName of memberNames) {
-    memberPicId[memberName] = memberData[memberName][picSet];
-  }
-}
-
-function preloadImages() {
-  for (const memberName of memberNames) {
-    for (let i = 1; i <= 4; i++) {
-      const img = new Image();
-      img.src = memberData[memberName][`picSet${i}`];
-    }
-  }
-}
 
 function setThemeIcon(isDarkMode) {
   document.querySelector(".theme-toggle-icon svg").innerHTML = isDarkMode
@@ -49,23 +28,13 @@ function toggleDarkMode() {
   setThemeIcon(isDarkMode);
 
   localStorage.setItem("darkMode", isDarkMode);
-  initMemberPic();
   showFinal({ skipIncrement: true });
 }
 
 function toNameFace(mem) {
-  return html`<div class="photocard-image-container">
-      <img
-        src="${memberPicId[mem]}"
-        alt="${mem}"
-        class="photocard-image"
-        width="582"
-        height="900"
-      />
-      <div class="member-badge">${memberData[mem].sNumber}</div>
-    </div>
-    <div class="photocard-info">
-      <div class="member-name">${mem} ${memberData[mem].emoji || ""}</div>
+  return html`
+    <div class="photocard-info no-image">
+      <div class="member-name">${mem}</div>
     </div>`;
 }
 
@@ -84,7 +53,6 @@ function cacheElements() {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-  initMemberPic();
   cacheElements();
 
   const savedDarkMode = localStorage.getItem("darkMode");
@@ -103,17 +71,6 @@ document.addEventListener("DOMContentLoaded", function () {
     .querySelector(".theme-toggle")
     .addEventListener("click", toggleDarkMode);
   els.showMore.addEventListener("click", toggleResult);
-
-  const initialImg = document.querySelector(".photocard-image");
-  if (initialImg.complete) {
-    initialImg.classList.remove("is-loading");
-    preloadImages();
-  } else {
-    initialImg.addEventListener("load", () => {
-      initialImg.classList.remove("is-loading");
-      preloadImages();
-    });
-  }
 });
 
 let isAnimating = false;
@@ -153,7 +110,7 @@ function showResult({ full = false } = {}) {
 
   for (let i = 0; i < iterCount; i++) {
     const mem = sortedMembers[i];
-    const disp = `${mem}${memberData[mem].emoji}`;
+    const disp = mem;
     listResult.push(disp);
 
     items.push(html`<li><span class="number">${ranking}</span> ${disp}</li>`);
@@ -178,10 +135,10 @@ function showResult({ full = false } = {}) {
 
   els.showMore.style.display = "inline";
 
-  const shareText = `My %23tripleS Bias Ranking:%0A${listResult.join("%0A")}%0A> https://sssorter.pages.dev`;
+  const shareText = `My WAVs Bias Ranking:%0A${listResult.join("%0A")}`;
   els.tweetButton.style.display = "inline-block";
   els.tweetButton.href = `https://twitter.com/intent/tweet?text=${shareText}`;
-  els.sssongsButton.style.display = "inline-block";
+  if(els.sssongsButton) els.sssongsButton.style.display = "none";
 }
 
 let showingFullResults = false;
@@ -200,16 +157,13 @@ function updateProgressDisplay(progress) {
   const heartDisplay =
     "♥".repeat(filledHearts) + "♡".repeat(heartCount - filledHearts);
   els.battleNumber.innerHTML = html`<strong
-      >Gravity #${progress.currentQuestion}</strong
+      >Battle #${progress.currentQuestion}</strong
     ><br />${heartDisplay} ${progress.progressPercent}% sorted`;
 }
 
 function updateOptionContent(optionElement, memberName, memberIndex) {
   optionElement.innerHTML = toNameFace(memberName);
-  optionElement.style.setProperty(
-    "--member-color",
-    memberData[memberName].color,
-  );
+  optionElement.style.setProperty("--member-color", "#f87fff"); 
   optionElement.dataset.memberIndex = memberIndex;
 }
 
@@ -268,17 +222,6 @@ async function animateCardUpdate(
     card.classList.remove("selected-glow");
 
     updateOptionContent(card, nextMemberName, nextMemberIndex);
-
-    const newImage = card.querySelector(".photocard-image");
-    if (newImage && !newImage.complete) {
-      await new Promise((resolve) => {
-        const timeout = setTimeout(resolve, 300);
-        newImage.onload = newImage.onerror = () => {
-          clearTimeout(timeout);
-          resolve();
-        };
-      });
-    }
 
     card.classList.remove("flip-out");
     card.classList.add("flip-ready");
