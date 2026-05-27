@@ -105,7 +105,7 @@ function showResult({ full = false } = {}) {
   const listResult = [];
   const sortedMembers = sorter.getSortedMembers();
 
-  const iterCount = full ? sortedMembers.length : sortedMembers.length / 2;
+  const iterCount = full ? sortedMembers.length : 24;
   const items = [];
 
   for (let i = 0; i < iterCount; i++) {
