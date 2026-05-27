@@ -2,7 +2,7 @@ name: Deploy Vite site to Pages
 
 on:
   push:
-    branches: ['main'] # Triggers the build when you push to the main branch
+    branches: ['master'] # Triggers the build when you push to the main branch
 
 permissions:
   contents: read
