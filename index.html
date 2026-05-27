@@ -32,28 +32,21 @@
     <meta name="msapplication-TileColor" content="#f87fff" />
 
     <link rel="preconnect" href="https://imagedelivery.net" crossorigin />
-    <link rel="stylesheet" href="/assets/sorter.css" />
+    <link rel="stylesheet" href="assets/sorter.css" />
     <link rel="icon" type="image/png" href="https://i.imgur.com/ofXOn8m.png" />
 
-    <script type="module" src="/assets/sorter.js"></script>
+    <script type="module" src="assets/sorter.js"></script>
   </head>
 
   <body class="song-sorter">
-    <div class="theme-toggle" style="display: flex; gap: 15px;">
-      
-      <button id="music-toggle" style="background: none; border: none; cursor: pointer; font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 14px; color: inherit; padding: 0;">
-        Play Music
-      </button>
-      
-      <div id="dark-mode-btn" style="display: flex; align-items: center; cursor: pointer;">
-        <span id="dark-mode-text" class="theme-toggle-text">#DarkMode</span>
-        <div class="theme-toggle-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-          </svg>
-        </div>
+    
+    <div id="dark-mode-btn" class="theme-toggle">
+      <span id="dark-mode-text" class="theme-toggle-text">#DarkMode</span>
+      <div class="theme-toggle-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
       </div>
-      
     </div>
     
     <header class="page-header container">
