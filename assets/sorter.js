@@ -107,7 +107,7 @@ const playlist = [
 
   let currentSongIndex = 0;
   if (els.bgMusic) {
-    els.bgMusic.volume = 0.1; 
+    els.bgMusic.volume = 0.05; 
     els.bgMusic.src = playlist[currentSongIndex]; 
   }
 
