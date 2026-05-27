@@ -1,3 +1,4 @@
+
 import TripleSBiasSorter from "./sorter-class.js";
 import { memberData } from "./member-data.js";
 
@@ -49,7 +50,6 @@ function cacheElements() {
   els.pageSorter = document.getElementById("page-sorter");
   els.showMore = document.getElementById("showMore");
   els.tweetButton = document.getElementById("tweet-button");
-  els.musicToggle = document.getElementById("music-toggle");
   els.bgMusic = document.getElementById("bg-music");
   els.darkModeBtn = document.getElementById("dark-mode-btn");
 }
@@ -71,7 +71,6 @@ document.addEventListener("DOMContentLoaded", function () {
   els.optionA.addEventListener("click", () => handleSort("A"));
   els.optionB.addEventListener("click", () => handleSort("B"));
   
-  // Safe listener just for dark mode
   if (els.darkModeBtn) {
     els.darkModeBtn.addEventListener("click", toggleDarkMode);
   }
@@ -80,25 +79,27 @@ document.addEventListener("DOMContentLoaded", function () {
     els.showMore.addEventListener("click", toggleResult);
   }
 
-  // --- Music Player Logic ---
+  // --- Invisible Autoplay Music Logic ---
+  // Notice the paths no longer have a slash at the start
   const playlist = [
-    "/assets/Beam.mp3",
-    "/assets/Chiyu.mp3",
-    "/assets/Deju-Vu.mp3",
-    "/assets/Firework Diary.mp3",
-    "/assets/Friend Zone.mp3",
-    "/assets/Generation.mp3",
-    "/assets/Inner Dance.mp3",
-    "/assets/Love Child.mp3",
-    "/assets/Moto Princess.mp3",
-    "/assets/Persona.mp3",
-    "/assets/Seoul Sonyo Sound.mp3",
-    "/assets/Speed Love.mp3",
-    "/assets/Touch.mp3",
-    "/assets/Vision.mp3",
-    "/assets/White Soul Sneakers.mp3"
+    "assets/Beam.mp3",
+    "assets/Chiyu.mp3",
+    "assets/Deju-Vu.mp3",
+    "assets/Firework Diary.mp3",
+    "assets/Friend Zone.mp3",
+    "assets/Generation.mp3",
+    "assets/Inner Dance.mp3",
+    "assets/Love Child.mp3",
+    "assets/Moto Princess.mp3",
+    "assets/Persona.mp3",
+    "assets/Seoul Sonyo Sound.mp3",
+    "assets/Speed Love.mp3",
+    "assets/Touch.mp3",
+    "assets/Vision.mp3",
+    "assets/White Soul Sneakers.mp3"
   ];
 
+  // Shuffle playlist
   for (let i = playlist.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [playlist[i], playlist[j]] = [playlist[j], playlist[i]];
@@ -110,20 +111,18 @@ document.addEventListener("DOMContentLoaded", function () {
     els.bgMusic.src = playlist[currentSongIndex]; 
   }
 
-  let isMusicPlaying = false;
+  let hasMusicStarted = false;
 
-  if (els.musicToggle && els.bgMusic) {
-    els.musicToggle.addEventListener("click", () => {
-      if (isMusicPlaying) {
-        els.bgMusic.pause();
-        els.musicToggle.textContent = "Play Music";
-      } else {
-        els.bgMusic.play().catch(e => console.warn("Playback prevented:", e));
-        els.musicToggle.textContent = "Pause Music";
-      }
-      isMusicPlaying = !isMusicPlaying;
-    });
+  // The invisible trigger: starts music the moment they click anywhere on the page
+  document.body.addEventListener("click", () => {
+    if (!hasMusicStarted && els.bgMusic) {
+      hasMusicStarted = true;
+      els.bgMusic.play().catch(e => console.warn("Playback prevented:", e));
+    }
+  }, { once: true });
 
+  // Auto-advance to next song
+  if (els.bgMusic) {
     els.bgMusic.addEventListener("ended", () => {
       currentSongIndex++;
       
@@ -222,7 +221,6 @@ function updateProgressDisplay(progress) {
     (progress.progressPercent / 100) * heartCount,
   );
   
-  // Safe unicode characters to prevent text editor corruption
   const solidHeart = "\u2665";
   const emptyHeart = "\u2661";
   
