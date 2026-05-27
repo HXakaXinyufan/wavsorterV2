@@ -81,22 +81,22 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // --- Bulletproof Music Logic ---
   // Notice the %20 replacing the spaces in the filenames
-  const playlist = [
-    "assets/Beam.mp3",
-    "assets/Chiyu.mp3",
-    "assets/Deju-Vu.mp3",
-    "assets/Firework%20Diary.mp3",
-    "assets/Friend%20Zone.mp3",
-    "assets/Generation.mp3",
-    "assets/Inner%20Dance.mp3",
-    "assets/Love%20Child.mp3",
-    "assets/Moto%20Princess.mp3",
-    "assets/Persona.mp3",
-    "assets/Seoul%20Sonyo%20Sound.mp3",
-    "assets/Speed%20Love.mp3",
-    "assets/Touch.mp3",
-    "assets/Vision.mp3",
-    "assets/White%20Soul%20Sneakers.mp3"
+const playlist = [
+    "/wavsorterV2/assets/Beam.mp3",
+    "/wavsorterV2/assets/Chiyu.mp3",
+    "/wavsorterV2/assets/Deju-Vu.mp3",
+    "/wavsorterV2/assets/Firework Diary.mp3",
+    "/wavsorterV2/assets/Friend Zone.mp3",
+    "/wavsorterV2/assets/Generation.mp3",
+    "/wavsorterV2/assets/Inner Dance.mp3",
+    "/wavsorterV2/assets/Love Child.mp3",
+    "/wavsorterV2/assets/Moto Princess.mp3",
+    "/wavsorterV2/assets/Persona.mp3",
+    "/wavsorterV2/assets/Seoul Sonyo Sound.mp3",
+    "/wavsorterV2/assets/Speed Love.mp3",
+    "/wavsorterV2/assets/Touch.mp3",
+    "/wavsorterV2/assets/Vision.mp3",
+    "/wavsorterV2/assets/White Soul Sneakers.mp3"
   ];
 
   // Shuffle playlist
