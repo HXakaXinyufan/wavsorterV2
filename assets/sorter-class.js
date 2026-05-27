@@ -44,27 +44,6 @@ export default class TripleSBiasSorter {
     const shuffledIndices = [...Array(this.memberNames.length).keys()];
     this.#shuffle(shuffledIndices);
 
-    if (this.memberNames.length > 23) {
-      const tempTree = this.#buildTree(shuffledIndices);
-      const firstA = tempTree.tree[tempTree.tree.length - 2][0];
-      const firstB = tempTree.tree[tempTree.tree.length - 1][0];
-
-      const pos0 = shuffledIndices.indexOf(0);
-      const pos23 = shuffledIndices.indexOf(23);
-      const posA = shuffledIndices.indexOf(firstA);
-      const posB = shuffledIndices.indexOf(firstB);
-
-      [shuffledIndices[pos0], shuffledIndices[posA]] = [
-        shuffledIndices[posA],
-        shuffledIndices[pos0],
-      ];
-      const newPos23 = shuffledIndices.indexOf(23);
-      [shuffledIndices[newPos23], shuffledIndices[posB]] = [
-        shuffledIndices[posB],
-        shuffledIndices[newPos23],
-      ];
-    }
-
     const result = this.#buildTree(shuffledIndices);
     this.#lstMember = result.tree;
     this.#parent = result.parent;
