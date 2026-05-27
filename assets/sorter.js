@@ -50,6 +50,8 @@ function cacheElements() {
   els.tweetButton = document.getElementById("tweet-button");
   els.sssongsButton = document.getElementById("sssongs-button");
   els.themeToggleText = document.querySelector(".theme-toggle-text");
+  els.musicToggle = document.getElementById("music-toggle");
+  els.bgMusic = document.getElementById("bg-music");
 }
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -71,6 +73,66 @@ document.addEventListener("DOMContentLoaded", function () {
     .querySelector(".theme-toggle")
     .addEventListener("click", toggleDarkMode);
   els.showMore.addEventListener("click", toggleResult);
+
+  // --- Music Player Logic ---
+  const playlist = [
+    "/assets/Beam.mp3",
+    "/assets/Chiyu.mp3",
+    "/assets/Deju-Vu.mp3",
+    "/assets/Firework Diary.mp3",
+    "/assets/Friend Zone.mp3",
+    "/assets/Generation.mp3",
+    "/assets/Inner Dance.mp3",
+    "/assets/Love Child.mp3",
+    "/assets/Moto Princess.mp3",
+    "/assets/Persona.mp3",
+    "/assets/Seoul Sonyo Sound.mp3",
+    "/assets/Speed Love.mp3",
+    "/assets/Touch.mp3",
+    "/assets/Vision.mp3",
+    "/assets/White Soul Sneakers.mp3"
+  ];
+
+  for (let i = playlist.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [playlist[i], playlist[j]] = [playlist[j], playlist[i]];
+  }
+
+  let currentSongIndex = 0;
+  if (els.bgMusic) {
+    els.bgMusic.volume = 0.2; 
+    els.bgMusic.src = playlist[currentSongIndex]; 
+  }
+
+  let isMusicPlaying = false;
+
+  if (els.musicToggle && els.bgMusic) {
+    els.musicToggle.addEventListener("click", () => {
+      if (isMusicPlaying) {
+        els.bgMusic.pause();
+        els.musicToggle.textContent = "🎵 Play";
+      } else {
+        els.bgMusic.play().catch(e => console.warn("Playback prevented:", e));
+        els.musicToggle.textContent = "🎵 Pause";
+      }
+      isMusicPlaying = !isMusicPlaying;
+    });
+
+    els.bgMusic.addEventListener("ended", () => {
+      currentSongIndex++;
+      
+      if (currentSongIndex >= playlist.length) {
+        currentSongIndex = 0;
+        for (let i = playlist.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [playlist[i], playlist[j]] = [playlist[j], playlist[i]];
+        }
+      }
+      
+      els.bgMusic.src = playlist[currentSongIndex];
+      els.bgMusic.play().catch(e => console.warn("Playback prevented:", e));
+    });
+  }
 });
 
 let isAnimating = false;
