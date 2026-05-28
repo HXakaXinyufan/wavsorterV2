@@ -463,14 +463,17 @@ body.dark-mode .versus {
   padding-left: 0;
 }
 
-.results-list li:not(:last-child) {
-  padding-bottom: 4px;
-  margin-bottom: 4px;
+/* Updated section to control line width */
+.results-list li {
+  padding: 8px 0;
+  font-size: 1.1rem;
   border-bottom: solid 1px #e1e4e8;
+  width: fit-content;
+  min-width: 250px;
   transition: border-color 0.3s ease;
 }
 
-body.dark-mode .results-list li:not(:last-child) {
+body.dark-mode .results-list li {
   border-bottom: solid 1px #444;
 }
 
