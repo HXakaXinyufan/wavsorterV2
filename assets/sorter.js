@@ -4,7 +4,8 @@ import { memberData } from "./member-data.js";
 const html = (strings, ...values) =>
   strings.reduce((acc, str, i) => acc + str + (values[i] ?? ""), "");
 
-let sorter; // We will initialize this AFTER they click start
+let sorter; 
+let historyStack = []; // New variable to store undo states
 
 const FLIP_TRANSITION_MS = 200;
 
@@ -58,6 +59,7 @@ function cacheElements() {
   els.tweetButton = document.getElementById("tweet-button");
   els.bgMusic = document.getElementById("bg-music");
   els.darkModeBtn = document.getElementById("dark-mode-btn");
+  els.undoBtn = document.getElementById("undo-btn"); // Cache undo button
 }
 
 function populateCheckboxes() {
@@ -117,9 +119,10 @@ document.addEventListener("DOMContentLoaded", function () {
       els.bgMusic.play().catch(e => console.warn("Audio blocked:", e));
     }
 
-    // Initialize Algorithm with Custom Selection
+    // Initialize Algorithm
     sorter = new TripleSBiasSorter(selectedMembers, memberData);
     sorter.reset();
+    historyStack = []; // Reset history when starting
 
     // Swap UI Screens
     els.selectionScreen.style.display = "none";
@@ -132,16 +135,26 @@ document.addEventListener("DOMContentLoaded", function () {
   els.optionA.addEventListener("click", () => handleSort("A"));
   els.optionB.addEventListener("click", () => handleSort("B"));
   
+  // Undo Logic
+  if (els.undoBtn) {
+    els.undoBtn.addEventListener("click", () => {
+      if (historyStack.length > 0 && !isAnimating) {
+        const previousState = historyStack.pop();
+        sorter.restoreState(previousState);
+        showFinal({ skipIncrement: true });
+      }
+    });
+  }
+  
   if (els.darkModeBtn) {
     els.darkModeBtn.addEventListener("click", toggleDarkMode);
   }
   
-  // Re-added the listener for the Show More button
   if (els.showMore) {
     els.showMore.addEventListener("click", toggleResult);
   }
 
-  // --- Music Playlist Logic ---
+  // Music Playlist Logic
   const playlist = [
     "Beam.mp3", "Chiyu.mp3", "Deju-Vu.mp3", "Firework Diary.mp3",
     "Friend Zone.mp3", "Generation.mp3", "Inner Dance.mp3", "Love Child.mp3",
@@ -181,6 +194,9 @@ let isAnimating = false;
 async function handleSort(preference) {
   if (sorter.isComplete() || isAnimating) return;
   
+  // Save state BEFORE modifying sorter
+  historyStack.push(sorter.getState());
+  
   isAnimating = true;
   document.body.classList.add("is-animating");
 
@@ -205,7 +221,6 @@ async function handleSort(preference) {
 
 let showingExpandedResults = false;
 
-// Re-added the toggle function
 function toggleResult() {
   showingExpandedResults = !showingExpandedResults;
   showResult({ expand: showingExpandedResults });
@@ -217,7 +232,6 @@ function showResult({ expand = false } = {}) {
   const listResult = [];
   const sortedMembers = sorter.getSortedMembers();
 
-  // Show Top 30 by default, Top 50 if expanded
   const limit = expand ? 50 : 30;
   const iterCount = Math.min(limit, sortedMembers.length);
   const items = [];
@@ -248,7 +262,6 @@ function showResult({ expand = false } = {}) {
   
   els.pageSorter.style.display = "none";
   
-  // Logic for the Show More / Show Less button
   if (els.showMore) {
     if (sortedMembers.length > 30) {
       els.showMore.style.display = "inline-block";
@@ -258,14 +271,15 @@ function showResult({ expand = false } = {}) {
       const maxExpansion = Math.min(50, sortedMembers.length);
       els.showMore.innerText = expand ? "Show Top 30" : `Show Top ${maxExpansion}`;
     } else {
-      // Hide if they sorted 30 or less people
       els.showMore.style.display = "none";
     }
   }
 
   const shareText = `My Top ${iterCount} WAVs Bias Ranking:%0A${listResult.join("%0A")}`;
-  els.tweetButton.style.display = "inline-block";
-  els.tweetButton.href = `https://twitter.com/intent/tweet?text=${shareText}`;
+  if(els.tweetButton) {
+    els.tweetButton.style.display = "inline-block";
+    els.tweetButton.href = `https://twitter.com/intent/tweet?text=${shareText}`;
+  }
 }
 
 function updateProgressDisplay(progress) {
