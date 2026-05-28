@@ -659,4 +659,29 @@ body.dark-mode .theme-toggle-icon {
 .theme-toggle-text {
   font-size: 14px;
   font-weight: bold;
+
+  /* Undo Button Styling */
+.undo-btn {
+  margin-top: 15px;
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: var(--text-dark);
+  border-radius: 20px;
+  cursor: pointer;
+  font-family: "Nunito", sans-serif;
+  font-weight: 700;
+  transition: all 0.2s ease;
 }
+
+body.dark-mode .undo-btn {
+  color: var(--dark-text);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.undo-btn:hover {
+  background: var(--primary-pink);
+  color: white;
+  border-color: var(--primary-pink);
+}
+
