@@ -135,6 +135,11 @@ document.addEventListener("DOMContentLoaded", function () {
   if (els.darkModeBtn) {
     els.darkModeBtn.addEventListener("click", toggleDarkMode);
   }
+  
+  // Re-added the listener for the Show More button
+  if (els.showMore) {
+    els.showMore.addEventListener("click", toggleResult);
+  }
 
   // --- Music Playlist Logic ---
   const playlist = [
@@ -198,14 +203,23 @@ async function handleSort(preference) {
   document.body.classList.remove("is-animating");
 }
 
-function showResult() {
+let showingExpandedResults = false;
+
+// Re-added the toggle function
+function toggleResult() {
+  showingExpandedResults = !showingExpandedResults;
+  showResult({ expand: showingExpandedResults });
+}
+
+function showResult({ expand = false } = {}) {
   let ranking = 1;
   let sameRank = 1;
   const listResult = [];
   const sortedMembers = sorter.getSortedMembers();
 
-  // Strictly enforce a maximum of 24 results
-  const iterCount = Math.min(24, sortedMembers.length);
+  // Show Top 30 by default, Top 50 if expanded
+  const limit = expand ? 50 : 30;
+  const iterCount = Math.min(limit, sortedMembers.length);
   const items = [];
 
   for (let i = 0; i < iterCount; i++) {
@@ -234,9 +248,19 @@ function showResult() {
   
   els.pageSorter.style.display = "none";
   
-  // Hide the Show More button permanently
+  // Logic for the Show More / Show Less button
   if (els.showMore) {
-    els.showMore.style.display = "none";
+    if (sortedMembers.length > 30) {
+      els.showMore.style.display = "inline-block";
+      els.showMore.style.marginTop = "15px";
+      els.showMore.style.cursor = "pointer";
+      
+      const maxExpansion = Math.min(50, sortedMembers.length);
+      els.showMore.innerText = expand ? "Show Top 30" : `Show Top ${maxExpansion}`;
+    } else {
+      // Hide if they sorted 30 or less people
+      els.showMore.style.display = "none";
+    }
   }
 
   const shareText = `My Top ${iterCount} WAVs Bias Ranking:%0A${listResult.join("%0A")}`;
