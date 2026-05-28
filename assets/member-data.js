@@ -29,7 +29,7 @@ export const memberData = {
   "@tama_got.chi (Hoon)": {},
   "@sinubok (Tested)": {},
   "@tzuwi_. (xintzuwi)": {},
-  "@bagelpizzas (mike)": {},
+  "@24marcosmos": {},
   "@robo_lija": {},
   "@orchid_from_sg": {},
   "@wav_HX": {},
@@ -46,7 +46,7 @@ export const memberData = {
   "@sammifest (triplesammi)": {},
   "@noobiex16 (NewbieX2)": {},
   "@thesalty.one (hoplegance kim s25 || kosmos11)": {},
-  "@highkwakeneuinely": {},
-  "@mizi22 (Michelle)": {},
+  "@socialpots": {},
+  "@jackfrombuffalo (JackJiwoo)": {},
   "@wheretheheckisbaki (Baki)": {}
 };
