@@ -135,9 +135,6 @@ document.addEventListener("DOMContentLoaded", function () {
   if (els.darkModeBtn) {
     els.darkModeBtn.addEventListener("click", toggleDarkMode);
   }
-  if (els.showMore) {
-    els.showMore.addEventListener("click", toggleResult);
-  }
 
   // --- Music Playlist Logic ---
   const playlist = [
@@ -201,13 +198,14 @@ async function handleSort(preference) {
   document.body.classList.remove("is-animating");
 }
 
-function showResult({ full = false } = {}) {
+function showResult() {
   let ranking = 1;
   let sameRank = 1;
   const listResult = [];
   const sortedMembers = sorter.getSortedMembers();
 
-  const iterCount = full ? sortedMembers.length : 24;
+  // Strictly enforce a maximum of 24 results
+  const iterCount = Math.min(24, sortedMembers.length);
   const items = [];
 
   for (let i = 0; i < iterCount; i++) {
@@ -228,25 +226,22 @@ function showResult({ full = false } = {}) {
   }
 
   els.battleResult.innerHTML = html`<div class="results-list">
-    <h2>Bias Ranking Result</h2>
+    <h2>Bias Ranking Result (Top ${iterCount})</h2>
     <ul>
       ${items.join("")}
     </ul>
   </div>`;
+  
   els.pageSorter.style.display = "none";
-  els.showMore.style.display = "inline";
+  
+  // Hide the Show More button permanently
+  if (els.showMore) {
+    els.showMore.style.display = "none";
+  }
 
-  const shareText = `My WAVs Bias Ranking:%0A${listResult.join("%0A")}`;
+  const shareText = `My Top ${iterCount} WAVs Bias Ranking:%0A${listResult.join("%0A")}`;
   els.tweetButton.style.display = "inline-block";
   els.tweetButton.href = `https://twitter.com/intent/tweet?text=${shareText}`;
-}
-
-let showingFullResults = false;
-
-function toggleResult() {
-  showingFullResults = !showingFullResults;
-  els.showMore.innerText = showingFullResults ? "Show Less" : "Show More";
-  showResult({ full: showingFullResults });
 }
 
 function updateProgressDisplay(progress) {
