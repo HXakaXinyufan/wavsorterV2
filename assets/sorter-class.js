@@ -115,6 +115,42 @@ export default class TripleSBiasSorter {
     this.initialize();
   }
 
+  // --- NEW UNDO LOGIC ---
+  getState() {
+    return {
+      lstMember: JSON.parse(JSON.stringify(this.#lstMember)),
+      parent: [...this.#parent],
+      equal: [...this.#equal],
+      rec: [...this.#rec],
+      cmp1: this.#cmp1,
+      cmp2: this.#cmp2,
+      head1: this.#head1,
+      head2: this.#head2,
+      nrec: this.#nrec,
+      numQuestion: this.#numQuestion,
+      totalSize: this.#totalSize,
+      finishSize: this.#finishSize,
+      finishFlag: this.#finishFlag
+    };
+  }
+
+  restoreState(state) {
+    this.#lstMember = JSON.parse(JSON.stringify(state.lstMember));
+    this.#parent = [...state.parent];
+    this.#equal = [...state.equal];
+    this.#rec = [...state.rec];
+    this.#cmp1 = state.cmp1;
+    this.#cmp2 = state.cmp2;
+    this.#head1 = state.head1;
+    this.#head2 = state.head2;
+    this.#nrec = state.nrec;
+    this.#numQuestion = state.numQuestion;
+    this.#totalSize = state.totalSize;
+    this.#finishSize = state.finishSize;
+    this.#finishFlag = state.finishFlag;
+  }
+  // -----------------------
+
   #shuffle(arr) {
     for (let i = arr.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
