@@ -4,8 +4,7 @@ import { memberData } from "./member-data.js";
 const html = (strings, ...values) =>
   strings.reduce((acc, str, i) => acc + str + (values[i] ?? ""), "");
 
-const memberNames = Object.keys(memberData);
-let sorter = new TripleSBiasSorter(memberNames, memberData);
+let sorter; // We will initialize this AFTER they click start
 
 const FLIP_TRANSITION_MS = 200;
 
@@ -27,9 +26,11 @@ function toggleDarkMode() {
     dmText.textContent = isDarkMode ? "Light Mode" : "#DarkMode";
   }
   setThemeIcon(isDarkMode);
-
   localStorage.setItem("darkMode", isDarkMode);
-  showFinal({ skipIncrement: true });
+  
+  if (sorter && !sorter.isComplete()) {
+      showFinal({ skipIncrement: true });
+  }
 }
 
 function toNameFace(mem) {
@@ -40,7 +41,7 @@ function toNameFace(mem) {
 }
 
 let els = {};
-let hasMusicStarted = false; // Global flag for music
+let hasMusicStarted = false;
 
 function cacheElements() {
   els.optionA = document.getElementById("optionA");
@@ -48,10 +49,30 @@ function cacheElements() {
   els.battleNumber = document.getElementById("battleNumber");
   els.battleResult = document.getElementById("battleResult");
   els.pageSorter = document.getElementById("page-sorter");
+  els.selectionScreen = document.getElementById("selection-screen");
+  els.checkboxContainer = document.getElementById("checkbox-container");
+  els.btnSelectAll = document.getElementById("btn-select-all");
+  els.btnClearAll = document.getElementById("btn-clear-all");
+  els.btnStartSort = document.getElementById("btn-start-sort");
   els.showMore = document.getElementById("showMore");
   els.tweetButton = document.getElementById("tweet-button");
   els.bgMusic = document.getElementById("bg-music");
   els.darkModeBtn = document.getElementById("dark-mode-btn");
+}
+
+function populateCheckboxes() {
+  const memberNames = Object.keys(memberData);
+  els.checkboxContainer.innerHTML = "";
+  
+  memberNames.forEach(name => {
+    const label = document.createElement("label");
+    label.className = "checkbox-item";
+    label.innerHTML = `
+      <input type="checkbox" class="member-checkbox" value="${name}" checked>
+      <span>${name}</span>
+    `;
+    els.checkboxContainer.appendChild(label);
+  });
 }
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -65,41 +86,67 @@ document.addEventListener("DOMContentLoaded", function () {
     setThemeIcon(true);
   }
 
-  sorter.reset();
-  showFinal();
+  // Generate the Selection Grid
+  populateCheckboxes();
 
+  // Selection Controls
+  els.btnSelectAll.addEventListener("click", () => {
+    document.querySelectorAll(".member-checkbox").forEach(cb => cb.checked = true);
+  });
+  
+  els.btnClearAll.addEventListener("click", () => {
+    document.querySelectorAll(".member-checkbox").forEach(cb => cb.checked = false);
+  });
+
+  // START SORTING BUTTON
+  els.btnStartSort.addEventListener("click", () => {
+    const checkboxes = document.querySelectorAll('.member-checkbox');
+    const selectedMembers = [];
+    checkboxes.forEach(cb => {
+      if (cb.checked) selectedMembers.push(cb.value);
+    });
+
+    if (selectedMembers.length < 2) {
+      alert("Please select at least 2 WAVs to start a battle!");
+      return;
+    }
+
+    // Trigger Music
+    if (!hasMusicStarted && els.bgMusic) {
+      hasMusicStarted = true;
+      els.bgMusic.play().catch(e => console.warn("Audio blocked:", e));
+    }
+
+    // Initialize Algorithm with Custom Selection
+    sorter = new TripleSBiasSorter(selectedMembers, memberData);
+    sorter.reset();
+
+    // Swap UI Screens
+    els.selectionScreen.style.display = "none";
+    els.pageSorter.style.display = "block";
+    
+    showFinal();
+  });
+
+  // Battle Listeners
   els.optionA.addEventListener("click", () => handleSort("A"));
   els.optionB.addEventListener("click", () => handleSort("B"));
   
   if (els.darkModeBtn) {
     els.darkModeBtn.addEventListener("click", toggleDarkMode);
   }
-  
   if (els.showMore) {
     els.showMore.addEventListener("click", toggleResult);
   }
 
-  // --- Bulletproof Music Logic ---
-  // Notice the %20 replacing the spaces in the filenames
-const playlist = [
-    "Beam.mp3",
-    "Chiyu.mp3",
-    "Deju-Vu.mp3",
-    "Firework Diary.mp3",
-    "Friend Zone.mp3",
-    "Generation.mp3",
-    "Inner Dance.mp3",
-    "Love Child.mp3",
-    "Moto Princess.mp3",
-    "Persona.mp3",
-    "Seoul Sonyo Sound.mp3",
-    "Speed Love.mp3",
-    "Touch.mp3",
-    "Vision.mp3",
-    "White Soul Sneakers.mp3"
+  // --- Music Playlist Logic ---
+  const playlist = [
+    "Beam.mp3", "Chiyu.mp3", "Deju-Vu.mp3", "Firework Diary.mp3",
+    "Friend Zone.mp3", "Generation.mp3", "Inner Dance.mp3", "Love Child.mp3",
+    "Moto Princess.mp3", "Persona.mp3", "Seoul Sonyo Sound.mp3",
+    "Speed Love.mp3", "Touch.mp3", "Vision.mp3", "White Soul Sneakers.mp3"
   ];
 
-  // Shuffle playlist
   for (let i = playlist.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [playlist[i], playlist[j]] = [playlist[j], playlist[i]];
@@ -111,11 +158,9 @@ const playlist = [
     els.bgMusic.src = playlist[currentSongIndex]; 
   }
 
-  // Auto-advance to next song when one ends
   if (els.bgMusic) {
     els.bgMusic.addEventListener("ended", () => {
       currentSongIndex++;
-      
       if (currentSongIndex >= playlist.length) {
         currentSongIndex = 0;
         for (let i = playlist.length - 1; i > 0; i--) {
@@ -123,7 +168,6 @@ const playlist = [
           [playlist[i], playlist[j]] = [playlist[j], playlist[i]];
         }
       }
-      
       els.bgMusic.src = playlist[currentSongIndex];
       els.bgMusic.play().catch(e => console.warn("Next track prevented:", e));
     });
@@ -135,14 +179,6 @@ let isAnimating = false;
 async function handleSort(preference) {
   if (sorter.isComplete() || isAnimating) return;
   
-  // --- START MUSIC ON FIRST CARD CLICK ---
-  // Tying the music directly to the vote button bypasses strict browser blocks
-  if (!hasMusicStarted && els.bgMusic) {
-    hasMusicStarted = true;
-    console.log("Starting music track:", els.bgMusic.src);
-    els.bgMusic.play().catch(e => console.warn("Audio blocked by browser:", e));
-  }
-
   isAnimating = true;
   document.body.classList.add("is-animating");
 
@@ -198,7 +234,6 @@ function showResult({ full = false } = {}) {
     </ul>
   </div>`;
   els.pageSorter.style.display = "none";
-
   els.showMore.style.display = "inline";
 
   const shareText = `My WAVs Bias Ranking:%0A${listResult.join("%0A")}`;
@@ -216,13 +251,9 @@ function toggleResult() {
 
 function updateProgressDisplay(progress) {
   const heartCount = 5;
-  const filledHearts = Math.floor(
-    (progress.progressPercent / 100) * heartCount,
-  );
-  
+  const filledHearts = Math.floor((progress.progressPercent / 100) * heartCount);
   const solidHeart = "\u2665";
   const emptyHeart = "\u2661";
-  
   const heartDisplay = solidHeart.repeat(filledHearts) + emptyHeart.repeat(heartCount - filledHearts);
 
   els.battleNumber.innerHTML = html`<strong>Battle #${progress.currentQuestion}</strong><br />${heartDisplay} ${progress.progressPercent}% sorted`;
@@ -243,58 +274,33 @@ function animateElement(element, ...animationClasses) {
       element.removeEventListener("transitionend", onAnimationEnd);
       resolve();
     };
-
     const onAnimationEnd = (e) => {
       if (e.target !== element) return;
       doResolve();
     };
-
     element.addEventListener("transitionend", onAnimationEnd);
     element.classList.add(...animationClasses);
-
     setTimeout(doResolve, FLIP_TRANSITION_MS + 50);
   });
 }
 
-async function animateCardUpdate(
-  card,
-  nextMemberName,
-  nextMemberIndex,
-  isSelected,
-  forceUpdate = false,
-) {
-  const currentMemberIndex =
-    card.dataset.memberIndex != null
-      ? parseInt(card.dataset.memberIndex, 10)
-      : -1;
+async function animateCardUpdate(card, nextMemberName, nextMemberIndex, isSelected, forceUpdate = false) {
+  const currentMemberIndex = card.dataset.memberIndex != null ? parseInt(card.dataset.memberIndex, 10) : -1;
   const contentChanged = forceUpdate || currentMemberIndex !== nextMemberIndex;
 
-  card.classList.remove(
-    "fade-out",
-    "fade-in",
-    "flip-out",
-    "flip-in",
-    "flip-ready",
-    "selected-glow",
-  );
+  card.classList.remove("fade-out", "fade-in", "flip-out", "flip-in", "flip-ready", "selected-glow");
   card.style.opacity = "";
   card.style.transform = "";
 
-  if (isSelected) {
-    card.classList.add("selected-glow");
-  }
+  if (isSelected) card.classList.add("selected-glow");
 
   if (contentChanged && currentMemberIndex !== -1) {
     await animateElement(card, "flip-out");
     card.classList.remove("selected-glow");
-
     updateOptionContent(card, nextMemberName, nextMemberIndex);
-
     card.classList.remove("flip-out");
     card.classList.add("flip-ready");
-
     card.getBoundingClientRect();
-
     card.classList.remove("flip-ready");
     await animateElement(card, "flip-in");
   } else {
@@ -303,9 +309,7 @@ async function animateCardUpdate(
       card.style.visibility = "visible";
       card.style.opacity = 1;
     } else {
-      await new Promise((resolve) =>
-        setTimeout(resolve, FLIP_TRANSITION_MS * 2),
-      );
+      await new Promise((resolve) => setTimeout(resolve, FLIP_TRANSITION_MS * 2));
     }
   }
 
@@ -315,27 +319,13 @@ async function animateCardUpdate(
 }
 
 async function showFinal({ skipIncrement = false, selectedFlag = "" } = {}) {
-  if (!skipIncrement) {
-    updateProgressDisplay(sorter.getProgress());
-  }
+  if (!skipIncrement) updateProgressDisplay(sorter.getProgress());
 
   const comparison = sorter.getCurrentComparison();
   const forceUpdate = skipIncrement;
 
   await Promise.all([
-    animateCardUpdate(
-      els.optionA,
-      comparison.memberAName,
-      comparison.memberA,
-      selectedFlag === "A",
-      forceUpdate,
-    ),
-    animateCardUpdate(
-      els.optionB,
-      comparison.memberBName,
-      comparison.memberB,
-      selectedFlag === "B",
-      forceUpdate,
-    ),
+    animateCardUpdate(els.optionA, comparison.memberAName, comparison.memberA, selectedFlag === "A", forceUpdate),
+    animateCardUpdate(els.optionB, comparison.memberBName, comparison.memberB, selectedFlag === "B", forceUpdate),
   ]);
 }
