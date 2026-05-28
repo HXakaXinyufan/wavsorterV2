@@ -84,6 +84,9 @@ export const memberData = {
   "@sammifest (triplesammi)": {},
   "@strawberriess21 (lula)": {},
   "Lobinho": {},
-  "@huhsi": {},
-  "@ferosekairo": {}
+  "@huhsi (Kotoner)": {},
+  "@ferosekairo": {},
+  "@mylove4seodahyun (Dahyun on top)": {},
+  "@s0bread (pao)": {},
+  "@pk.shn (hayeoncutie)": {}
 };
