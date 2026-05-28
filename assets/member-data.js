@@ -81,5 +81,9 @@ export const memberData = {
   "@aizenero (weiz)": {},
   "@falling_infall (oblirator)": {},
   "@haewon.z (doyaz)": {},
-  "@sammifest (triplesammi)": {}
+  "@sammifest (triplesammi)": {},
+  "@strawberriess21 (lula)": {},
+  "Lobinho": {},
+  "@huhsi": {},
+  "@ferosekairo": {}
 };
